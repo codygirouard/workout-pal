@@ -9,12 +9,13 @@ datasource db {
 }
 
 model Workout {
-    id        String  @id @default(cuid())
-    name      String
-    weight    Int
-    reps      Int
-    athlete   User?   @relation(fields: [athleteId], references: [id])
-    athleteId String?
+    id          String  @id @default(cuid())
+    name        String
+    weight      Int
+    reps        Int
+    workoutType String
+    athlete     User?   @relation(fields: [athleteId], references: [id])
+    athleteId   String?
 }
 
 model Account {

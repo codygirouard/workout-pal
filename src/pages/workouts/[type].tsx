@@ -1,21 +1,23 @@
 import React from 'react';
 import { GetServerSideProps } from 'next';
-import ReactMarkdown from 'react-markdown';
 import Layout from '../../components/Layout';
-import { PostProps } from '../../components/Post';
+import { WorkoutProps } from '../../components/Workout';
 import { getSession } from 'next-auth/react';
 import prisma from '../../lib/prisma';
-import { Workout } from '@prisma/client';
 
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+export const getServerSideProps: GetServerSideProps = async ({
+	req,
+	params,
+}) => {
 	const session = await getSession({ req });
 	if (!session) {
-		return { props: { drafts: [] } };
+		return { props: { workouts: [] } };
 	}
 
 	const workouts = await prisma.workout.findMany({
 		where: {
 			athlete: { email: session.user.email },
+			workoutType: String(params?.type),
 		},
 		select: {
 			name: true,
@@ -30,10 +32,10 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
 };
 
 type Props = {
-	workouts?: Workout[];
+	workouts?: WorkoutProps[];
 };
 
-const Post: React.FC<Props> = (props) => {
+const Workouts: React.FC<Props> = (props) => {
 	return (
 		<Layout>
 			<div>
@@ -46,29 +48,8 @@ const Post: React.FC<Props> = (props) => {
 					);
 				})}
 			</div>
-			<style jsx>{`
-				.page {
-					background: white;
-					padding: 2rem;
-				}
-
-				.actions {
-					margin-top: 2rem;
-				}
-
-				button {
-					background: #ececec;
-					border: 0;
-					border-radius: 0.125rem;
-					padding: 1rem 2rem;
-				}
-
-				button + button {
-					margin-left: 1rem;
-				}
-			`}</style>
 		</Layout>
 	);
 };
 
-export default Post;
+export default Workouts;

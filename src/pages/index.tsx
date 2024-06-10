@@ -26,18 +26,19 @@ type Props = {
 	lastWorkoutType?: String;
 };
 
-const Blog: React.FC<Props> = (props) => {
+const Home: React.FC<Props> = (props) => {
 	return (
 		<Layout>
 			<div className="page">
-				<h1>Public Feed</h1>
+				<h1>Home</h1>
 				<main>
 					<p>{props.lastWorkoutType}</p>
-					<button onClick={() => Router.push('/workouts/a', `/workouts/a`)} />
+					<button onClick={() => Router.push('/workouts/a')}>a</button>
+					<button onClick={() => Router.push('/workouts/b')}>b</button>
 				</main>
 			</div>
 		</Layout>
 	);
 };
 
-export default Blog;
+export default Home;

@@ -12,7 +12,7 @@ const Header: React.FC = () => {
 
 	let left = (
 		<div className="left">
-			<Link href="/">Feed</Link>
+			<Link href="/">Home</Link>
 		</div>
 	);
 
@@ -21,7 +21,7 @@ const Header: React.FC = () => {
 	if (status === 'loading') {
 		left = (
 			<div className="left">
-				<Link href="/">Feed</Link>
+				<Link href="/">Home</Link>
 			</div>
 		);
 		right = (
@@ -42,8 +42,7 @@ const Header: React.FC = () => {
 	if (session) {
 		left = (
 			<div className="left">
-				<Link href="/">Feed</Link>
-				<Link href="/drafts">My drafts</Link>
+				<Link href="/">Home</Link>
 			</div>
 		);
 		right = (
@@ -51,9 +50,6 @@ const Header: React.FC = () => {
 				<p>
 					{session.user.name} ({session.user.email})
 				</p>
-				<Link href="/create">
-					<button>New post</button>
-				</Link>
 				<button onClick={() => signOut()}>Log out</button>
 			</div>
 		);

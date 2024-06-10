@@ -1,52 +1,86 @@
 import React from 'react';
 import { GetServerSideProps } from 'next';
 import Layout from '../../components/Layout';
-import { WorkoutProps } from '../../components/Workout';
 import { getSession } from 'next-auth/react';
 import prisma from '../../lib/prisma';
+import { User, Workout } from '@prisma/client';
+import Exercise from '../../components/Exercise';
+import { Stats, WorkoutType } from '../../types';
+import { exercisesList } from '../../lib/exercisesList';
+import Router from 'next/router';
 
 export const getServerSideProps: GetServerSideProps = async ({
 	req,
 	params,
 }) => {
 	const session = await getSession({ req });
+	const workoutType = String(params?.type);
 	if (!session) {
-		return { props: { workouts: [] } };
+		return { props: { workoutType } };
 	}
 
-	const workouts = await prisma.workout.findMany({
+	const savedWorkouts = await prisma.workout.findMany({
 		where: {
 			athlete: { email: session.user.email },
-			workoutType: String(params?.type),
-		},
-		select: {
-			name: true,
-			weight: true,
-			reps: true,
+			workoutType,
 		},
 	});
 
 	return {
-		props: { workouts },
+		props: {
+			workoutType,
+			savedWorkouts,
+			athlete: session.user,
+		},
 	};
 };
 
 type Props = {
-	workouts?: WorkoutProps[];
+	workoutType: WorkoutType;
+	savedWorkouts?: Workout[];
+	user?: User;
 };
 
 const Workouts: React.FC<Props> = (props) => {
+	const updateLastWorkoutType = async () => {
+		try {
+			const body = { workoutType: props.workoutType };
+			await fetch('/api/user', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(body),
+			});
+			await Router.push('/');
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
 	return (
 		<Layout>
 			<div>
 				<h2>workouts</h2>
-				{props.workouts.map((workout) => {
-					return (
-						<p
-							key={workout.name}
-						>{`${workout.name},${workout.weight},${workout.reps}`}</p>
-					);
-				})}
+				{exercisesList
+					.filter((exercise) => exercise.type === props.workoutType)
+					.map((workout) => {
+						const userWorkoutData = props?.savedWorkouts.find(
+							(savedWorkout) => savedWorkout.name === workout.name
+						);
+
+						const previousStats: Stats = {
+							weight: userWorkoutData?.weight || 0,
+							reps: userWorkoutData?.reps || 0,
+						};
+
+						return (
+							<Exercise
+								key={workout.name}
+								workoutInfo={workout}
+								previousStats={previousStats}
+							/>
+						);
+					})}
+				<button onClick={updateLastWorkoutType}>Finished!</button>
 			</div>
 		</Layout>
 	);

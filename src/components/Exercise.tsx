@@ -1,6 +1,23 @@
 import React, { useState } from 'react';
 import { WorkoutInfo, Stats } from '../types';
 
+const createOrUpdateWorkout = async (
+	weight: number,
+	reps: number,
+	workoutInfo: WorkoutInfo
+) => {
+	try {
+		const body = { weight, reps, ...workoutInfo };
+		await fetch('/api/workout', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(body),
+		});
+	} catch (error) {
+		console.error(error);
+	}
+};
+
 const Exercise: React.FC<{
 	workoutInfo: WorkoutInfo;
 	previousStats: Stats;
@@ -12,17 +29,8 @@ const Exercise: React.FC<{
 
 	const submitData = async (e: React.SyntheticEvent) => {
 		e.preventDefault();
-		try {
-			const body = { weight, reps };
-			await fetch('/api/workout', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ ...body, ...workoutInfo }),
-			});
-			setSaved(true);
-		} catch (error) {
-			console.error(error);
-		}
+		await createOrUpdateWorkout(weight, reps, workoutInfo);
+		setSaved(true);
 	};
 
 	return (

@@ -38,26 +38,28 @@ export const getServerSideProps: GetServerSideProps = async ({
 type Props = {
 	workoutType: WorkoutType;
 	savedWorkouts?: Workout[];
-	user?: User;
+	athlete?: User;
 };
 
-const Workouts: React.FC<Props> = (props) => {
-	const updateLastWorkoutType = async () => {
-		if (!props.user) {
-			return await Router.push('/');
-		}
-
+const updateLastWorkoutType = async (workoutType: WorkoutType, user?: User) => {
+	if (user) {
 		try {
-			const body = { workoutType: props.workoutType };
+			const body = { workoutType: workoutType };
 			await fetch('/api/user', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(body),
 			});
-			await Router.push('/');
 		} catch (error) {
 			console.error(error);
 		}
+	}
+};
+
+const Workouts: React.FC<Props> = (props) => {
+	const finishWorkout = async () => {
+		await updateLastWorkoutType(props.workoutType, props.athlete);
+		await Router.push('/');
 	};
 
 	return (
@@ -81,11 +83,11 @@ const Workouts: React.FC<Props> = (props) => {
 								key={workout.name}
 								workoutInfo={workout}
 								previousStats={previousStats}
-								saveStats={!!props.user}
+								saveStats={!!props.athlete}
 							/>
 						);
 					})}
-				<button onClick={updateLastWorkoutType}>Finished!</button>
+				<button onClick={finishWorkout}>Finished!</button>
 			</div>
 		</Layout>
 	);

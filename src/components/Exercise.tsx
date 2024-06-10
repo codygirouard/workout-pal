@@ -18,11 +18,17 @@ const createOrUpdateWorkout = async (
 	}
 };
 
-const Exercise: React.FC<{
+type Props = {
 	workoutInfo: WorkoutInfo;
 	previousStats: Stats;
 	saveStats: boolean;
-}> = ({ workoutInfo, previousStats, saveStats }) => {
+};
+
+const Exercise: React.FC<Props> = ({
+	workoutInfo,
+	previousStats,
+	saveStats,
+}) => {
 	const [weight, setWeight] = useState(previousStats.weight);
 	const [reps, setReps] = useState(previousStats.reps);
 	const [saved, setSaved] = useState(false);

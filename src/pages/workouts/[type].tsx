@@ -1,6 +1,6 @@
 import React from 'react';
 import { GetServerSideProps } from 'next';
-import Layout from '../../components/Layout';
+import Layout from '../../components/layout/Layout';
 import { getSession } from 'next-auth/react';
 import prisma from '../../lib/prisma';
 import { User, Workout } from '@prisma/client';

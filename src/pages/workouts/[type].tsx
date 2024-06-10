@@ -43,6 +43,10 @@ type Props = {
 
 const Workouts: React.FC<Props> = (props) => {
 	const updateLastWorkoutType = async () => {
+		if (!props.user) {
+			return await Router.push('/');
+		}
+
 		try {
 			const body = { workoutType: props.workoutType };
 			await fetch('/api/user', {
@@ -63,7 +67,7 @@ const Workouts: React.FC<Props> = (props) => {
 				{exercisesList
 					.filter((exercise) => exercise.type === props.workoutType)
 					.map((workout) => {
-						const userWorkoutData = props?.savedWorkouts.find(
+						const userWorkoutData = props?.savedWorkouts?.find(
 							(savedWorkout) => savedWorkout.name === workout.name
 						);
 
@@ -77,6 +81,7 @@ const Workouts: React.FC<Props> = (props) => {
 								key={workout.name}
 								workoutInfo={workout}
 								previousStats={previousStats}
+								saveStats={!!props.user}
 							/>
 						);
 					})}

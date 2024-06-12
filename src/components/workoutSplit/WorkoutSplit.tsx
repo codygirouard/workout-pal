@@ -34,6 +34,9 @@ const WorkoutSplit: React.FC<Props> = ({
 	savedWorkouts,
 }) => {
 	const [activeStep, setActiveStep] = useState<number>(0);
+	const exercises = exercisesList.filter(
+		(exercise) => exercise.type === workoutType
+	);
 
 	const finishWorkout = async () => {
 		await updateLastWorkoutType(workoutType, athlete);
@@ -52,11 +55,22 @@ const WorkoutSplit: React.FC<Props> = ({
 		}
 	};
 
-	const exercises = exercisesList.filter(
-		(exercise) => exercise.type === workoutType
-	);
+	const handleNextExercise = () => {
+		setActiveStep((prevActiveStep) => {
+			const step = prevActiveStep + 1;
+			if (step === exercises.length) {
+				finishWorkout();
+				return prevActiveStep;
+			}
+			return step;
+		});
+	};
 
 	const workout = exercises[activeStep];
+
+	if (!workout) {
+		return null;
+	}
 
 	const userWorkoutData = savedWorkouts?.find(
 		(savedWorkout) => savedWorkout.name === workout.name
@@ -75,9 +89,7 @@ const WorkoutSplit: React.FC<Props> = ({
 					previousStats={previousStats}
 					updateWorkoutData={updateWorkoutData}
 					saveStats={!!athlete}
-					nextExercise={() =>
-						setActiveStep((prevActiveStep) => prevActiveStep + 1)
-					}
+					nextExercise={handleNextExercise}
 				/>
 			</Styled.Content>
 			<Stepper

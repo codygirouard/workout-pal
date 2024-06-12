@@ -3,9 +3,7 @@ import { styled } from '@mui/system';
 export const Content = styled('main')({
 	display: 'flex',
 	flexDirection: 'column',
-	alignItems: 'center',
-	justifyContent: 'center',
-	height: '100%',
+	textAlign: 'center',
 	gap: 20,
-	marginBottom: '1rem',
+	marginBottom: 90,
 });
